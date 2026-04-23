@@ -1,0 +1,103 @@
+USE SustainablefashionDB;
+
+CREATE TABLE FabricsUSE (
+   FabricID INT IDENTITY(1,1) PRIMARY KEY,
+   FabricName VARCHAR(100),
+   FabricType VARCHAR(50),
+   QuantityAvailable INT,
+   Unit VARCHAR(20), -- meters, yards
+   CostPerUnit DECIMAL(10,2)
+   );
+
+   CREATE TABLE ProductsUSE (
+      ProductsID INT IDENTITY(1,1) PRIMARY KEY,
+      ProductsName NVARCHAR(100),
+      Category NVARCHAR(50), --e.g. Shirt, Dress
+      Price DECIMAL(10,2),
+      FabricID INT,
+      FOREIGN KEY (FabricID) REFERENCES FabricsUSE(FabricID)
+      );
+
+
+CREATE TABLE InventoryUSE (
+   InventoryID INT IDENTITY(1,1),
+   ProductID INT,
+   QuantityInStock INT,
+   LastUpdated DATETIME DEFAULT GETDATE()
+);
+
+CREATE TABLE OrdersUSE (
+   OrderID INT IDENTITY(1,1) PRIMARY KEY,
+   ProductID INT,
+   QuantitySold INT,
+   OrderDate DATETIME DEFAULT GETDATE()
+);
+
+CREATE TABLE FabricWASTE (
+   WasteID INT IDENTITY(1,1),
+   FabricID INT,
+   QuantityWasted INT,
+   WastedReason VARCHAR(100), -- e.g. cutting leftovers
+   DateRecorded DATETIME DEFAULT GETDATE(),
+   FOREIGN KEY (FabricID) REFERENCES FabricsUSE(FabricID)
+);
+
+-- Bulk insert for FabricsUSE table
+BULK INSERT FabricsUSE
+FROM 'C:\Users\USER\OneDrive\Fabrics.csv'
+WITH (
+    FORMAT = 'CSV',
+    CODEPAGE = '65001',
+    FIRSTROW = 2
+);
+
+SELECT * FROM FabricsUSE
+
+-- Bulk insert for ProductsUse table
+BULK INSERT ProductsUSE
+FROM 'C:\Users\USER\OneDrive\ProductsUSE (1).csv'
+WITH (
+    FORMAT = 'CSV',
+    CODEPAGE = '65001',
+    FIRSTROW = 2
+);
+
+SELECT  * FROM ProductsUSE
+
+--Bulk insert for InventoryUSE
+BULK INSERT InventoryUSE
+FROM 'C:\Users\USER\OneDrive\InventoryUSE.csv'
+WITH (
+    FORMAT = 'CSV',
+    CODEPAGE = '65001',
+    FIRSTROW = 2
+);
+
+SELECT * FROM InventoryUSE
+
+--Bulk insert for OrdersUSE
+BULK INSERT OrdersUSE
+FROM 'C:\Users\USER\OneDrive\OrdersUSE.csv'
+WITH (
+    FORMAT = 'CSV',
+    CODEPAGE = '65001',
+    FIRSTROW = 2
+);
+
+SELECT * FROM OrdersUSE
+
+--Bulk insert for FabricWASTE
+BULK INSERT FabricWASTE
+FROM 'C:\Users\USER\OneDrive\FabricWaste.csv'
+WITH (
+    FORMAT = 'CSV',
+    CODEPAGE = '65001',
+    FIRSTROW = 2
+);
+
+SELECT * FROM FabricWASTE
+
+SELECT ProductsName, FabricType
+FROM ProductsUSE
+JOIN FabricsUSE
+ON ProductsUSE.FabricID = FabricsUSE.FabricID;
